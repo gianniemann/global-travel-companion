@@ -9,21 +9,18 @@ function Login() {
     const navigate = useNavigate();
     const { login } = useAuth();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
-        // Validierung
         if (!username || !password) {
             setError('Bitte alle Felder ausfüllen');
             return;
         }
 
-        // Login-Versuch
-        const result = login(username, password);
+        const result = await login(username, password);
 
         if (result.success) {
-            // Weiterleitung zur Home-Seite nach erfolgreichem Login
             navigate('/gtc/');
         } else {
             setError(result.message);

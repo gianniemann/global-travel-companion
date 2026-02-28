@@ -22,31 +22,27 @@ function Register() {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setSuccess('');
 
-        // Validierung
         if (!formData.firstName || !formData.lastName || !formData.username || !formData.password) {
             setError('Bitte alle Felder ausfüllen');
             return;
         }
 
-        // Passwort-Bestätigung prüfen
         if (formData.password !== formData.confirmPassword) {
             setError('Passwörter stimmen nicht überein');
             return;
         }
 
-        // Passwort-Länge prüfen
         if (formData.password.length < 4) {
             setError('Passwort muss mindestens 4 Zeichen lang sein');
             return;
         }
 
-        // Registrierungs-Versuch
-        const result = register({
+        const result = await register({
             firstName: formData.firstName,
             lastName: formData.lastName,
             username: formData.username,
@@ -55,7 +51,6 @@ function Register() {
 
         if (result.success) {
             setSuccess('Registrierung erfolgreich! Weiterleitung...');
-            // Kurze Verzögerung für Erfolgsmeldung, dann Weiterleitung
             setTimeout(() => {
                 navigate('/gtc/');
             }, 1500);
