@@ -1,6 +1,15 @@
-import { currencies } from '../data/currencyData';
+import { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config.js';
 
 function Currencies() {
+    const [currencies, setCurrencies] = useState([]);
+
+    useEffect(() => {
+        fetch(`${API_BASE_URL}/currencies`)
+            .then(res => res.json())
+            .then(data => setCurrencies(data));
+    }, []);
+
     return (
         <div className="container my-5">
             <div className="row">
@@ -12,7 +21,7 @@ function Currencies() {
                             <tr>
                                 <th>ISO 4217</th>
                                 <th>Name</th>
-                                <th>Countries</th>
+                                <th>Länder</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -20,7 +29,7 @@ function Currencies() {
                                 <tr key={currency.code}>
                                     <td><strong>{currency.code}</strong></td>
                                     <td>{currency.name}</td>
-                                    <td>{currency.countries.join(', ')}</td>
+                                    <td>{currency.countries}</td>
                                 </tr>
                             ))}
                             </tbody>

@@ -6,7 +6,7 @@ const router = express.Router();
 // GET /api/currencies
 router.get('/', async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT code, name FROM currency');
+        const [rows] = await pool.query('SELECT code, name, countries FROM currency');
         res.json(rows);
     } catch (err) {
         res.status(500).json({ message: 'Serverfehler', error: err.message });
