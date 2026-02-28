@@ -6,16 +6,14 @@ function Transactions() {
     const { currentUser } = useAuth();
     const [transactions, setTransactions] = useState([]);
 
-    // Transaktionen beim Mounten laden
     useEffect(() => {
         if (currentUser) {
-            const userTransactions = getTransactionsByUser(currentUser.username);
-            // Neueste zuerst anzeigen
-            setTransactions(userTransactions.reverse());
+            getTransactionsByUser(currentUser.username).then(data => {
+                setTransactions([...data].reverse());
+            });
         }
     }, [currentUser]);
 
-    // Datum formatieren
     const formatDate = (isoDate) => {
         const date = new Date(isoDate);
         return date.toLocaleDateString('de-CH', {
@@ -27,7 +25,6 @@ function Transactions() {
         });
     };
 
-    // Zahl formatieren
     const formatNumber = (num) => {
         return Number(num).toFixed(2);
     };
@@ -85,7 +82,7 @@ function Transactions() {
                           </span>
                                             </td>
                                             <td className="text-end">
-                                                <small>{transaction.exchangeRate.toFixed(6)}</small>
+                                                <small>{Number(transaction.exchangeRate).toFixed(6)}</small>
                                             </td>
                                             <td className="text-end">
                                                 <strong>{formatNumber(transaction.targetAmount)}</strong>
@@ -96,7 +93,6 @@ function Transactions() {
                                 </table>
                             </div>
 
-                            {/* Zusammenfassung */}
                             <div className="card mt-4">
                                 <div className="card-body">
                                     <h6 className="card-title">Statistik</h6>

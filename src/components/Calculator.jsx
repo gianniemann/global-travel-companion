@@ -5,55 +5,59 @@ import { addTransaction } from '../services/transactionService';
 
 function Calculator() {
     const { isLoggedIn, currentUser } = useAuth();
-    const availableCurrencies = getAvailableCurrencies();
 
-    const [sourceAmount, setSourceAmount] = useState('');
-    const [sourceCurrency, setSourceCurrency] = useState('CHF');
-    const [targetCurrency, setTargetCurrency] = useState('EUR');
-    const [targetAmount, setTargetAmount] = useState(0);
-    const [exchangeRate, setExchangeRate] = useState(0);
+    const [availableCurrencies, setAvailableCurrencies] = useState([]);
+    const [sourceAmount,    setSourceAmount]    = useState('');
+    const [sourceCurrency,  setSourceCurrency]  = useState('CHF');
+    const [targetCurrency,  setTargetCurrency]  = useState('EUR');
+    const [targetAmount,    setTargetAmount]    = useState(0);
+    const [exchangeRate,    setExchangeRate]    = useState(0);
     const [saveTransaction, setSaveTransaction] = useState(false);
-    const [message, setMessage] = useState('');
+    const [message,         setMessage]         = useState('');
+    const [messageType,     setMessageType]     = useState('success');
 
-    // Berechnung durchführen wenn sich Werte ändern
+    // Währungen beim Start laden
+    useEffect(() => {
+        getAvailableCurrencies().then(setAvailableCurrencies);
+    }, []);
+
+    // Live-Konvertierung
     useEffect(() => {
         if (sourceAmount && !isNaN(sourceAmount) && parseFloat(sourceAmount) > 0) {
-            const result = convertCurrency(
-                parseFloat(sourceAmount),
-                sourceCurrency,
-                targetCurrency
-            );
-            setTargetAmount(result.targetAmount);
-            setExchangeRate(result.rate);
+            convertCurrency(parseFloat(sourceAmount), sourceCurrency, targetCurrency)
+                .then(result => {
+                    setTargetAmount(result.targetAmount);
+                    setExchangeRate(result.rate);
+                });
         } else {
             setTargetAmount(0);
             setExchangeRate(0);
         }
     }, [sourceAmount, sourceCurrency, targetCurrency]);
 
-    const handleCalculate = () => {
+    const handleCalculate = async () => {
         setMessage('');
 
         if (!sourceAmount || isNaN(sourceAmount) || parseFloat(sourceAmount) <= 0) {
             setMessage('Bitte geben Sie einen gültigen Betrag ein');
+            setMessageType('danger');
             return;
         }
 
-        // Wenn Speichern aktiviert ist und User eingeloggt
         if (saveTransaction && isLoggedIn && currentUser) {
             const transaction = {
-                username: currentUser.username,
-                sourceAmount: parseFloat(sourceAmount),
+                username:       currentUser.username,
+                sourceAmount:   parseFloat(sourceAmount),
                 sourceCurrency: sourceCurrency,
                 targetCurrency: targetCurrency,
-                exchangeRate: exchangeRate,
-                targetAmount: targetAmount
+                exchangeRate:   exchangeRate,
+                targetAmount:   targetAmount
             };
 
-            addTransaction(transaction);
+            await addTransaction(transaction);
             setMessage('Transaktion erfolgreich gespeichert!');
+            setMessageType('success');
 
-            // Formular zurücksetzen nach Speichern
             setTimeout(() => {
                 setSourceAmount('');
                 setTargetAmount(0);
@@ -70,7 +74,7 @@ function Calculator() {
                     <h2 className="mb-4">Währungsrechner</h2>
 
                     {message && (
-                        <div className="alert alert-success" role="alert">
+                        <div className={`alert alert-${messageType}`} role="alert">
                             {message}
                         </div>
                     )}
@@ -78,12 +82,9 @@ function Calculator() {
                     <div className="card shadow">
                         <div className="card-body p-4">
 
-                            {/* Quellwährung */}
                             <div className="row mb-4">
                                 <div className="col-md-7">
-                                    <label htmlFor="sourceAmount" className="form-label">
-                                        Betrag
-                                    </label>
+                                    <label htmlFor="sourceAmount" className="form-label">Betrag</label>
                                     <input
                                         type="number"
                                         className="form-control form-control-lg"
@@ -96,25 +97,20 @@ function Calculator() {
                                     />
                                 </div>
                                 <div className="col-md-5">
-                                    <label htmlFor="sourceCurrency" className="form-label">
-                                        Von
-                                    </label>
+                                    <label htmlFor="sourceCurrency" className="form-label">Von</label>
                                     <select
                                         className="form-select form-select-lg"
                                         id="sourceCurrency"
                                         value={sourceCurrency}
                                         onChange={(e) => setSourceCurrency(e.target.value)}
                                     >
-                                        {availableCurrencies.map((currency) => (
-                                            <option key={currency} value={currency}>
-                                                {currency}
-                                            </option>
+                                        {availableCurrencies.map(c => (
+                                            <option key={c} value={c}>{c}</option>
                                         ))}
                                     </select>
                                 </div>
                             </div>
 
-                            {/* Wechselkurs Anzeige */}
                             {exchangeRate > 0 && (
                                 <div className="text-center mb-3">
                                     <small className="text-muted">
@@ -123,17 +119,13 @@ function Calculator() {
                                 </div>
                             )}
 
-                            {/* Trennlinie mit Icon */}
                             <div className="text-center mb-4">
                                 <span className="badge bg-primary">⇓</span>
                             </div>
 
-                            {/* Zielwährung */}
                             <div className="row mb-4">
                                 <div className="col-md-7">
-                                    <label htmlFor="targetAmount" className="form-label">
-                                        Ergebnis
-                                    </label>
+                                    <label htmlFor="targetAmount" className="form-label">Ergebnis</label>
                                     <input
                                         type="text"
                                         className="form-control form-control-lg bg-light"
@@ -143,25 +135,20 @@ function Calculator() {
                                     />
                                 </div>
                                 <div className="col-md-5">
-                                    <label htmlFor="targetCurrency" className="form-label">
-                                        Nach
-                                    </label>
+                                    <label htmlFor="targetCurrency" className="form-label">Nach</label>
                                     <select
                                         className="form-select form-select-lg"
                                         id="targetCurrency"
                                         value={targetCurrency}
                                         onChange={(e) => setTargetCurrency(e.target.value)}
                                     >
-                                        {availableCurrencies.map((currency) => (
-                                            <option key={currency} value={currency}>
-                                                {currency}
-                                            </option>
+                                        {availableCurrencies.map(c => (
+                                            <option key={c} value={c}>{c}</option>
                                         ))}
                                     </select>
                                 </div>
                             </div>
 
-                            {/* Speichern-Option (nur für eingeloggte User) */}
                             {isLoggedIn ? (
                                 <div className="mb-3">
                                     <div className="form-check">
@@ -185,7 +172,6 @@ function Calculator() {
                                 </div>
                             )}
 
-                            {/* Button */}
                             {isLoggedIn && saveTransaction && (
                                 <button
                                     className="btn btn-primary btn-lg w-100"
@@ -197,19 +183,6 @@ function Calculator() {
 
                         </div>
                     </div>
-
-                    {/* Berechnungsbeispiel */}
-                    <div className="card mt-4">
-                        <div className="card-body">
-                            <h6 className="card-title">Beispiel:</h6>
-                            <p className="card-text mb-0">
-                                <small className="text-muted">
-                                    100 CHF → EUR = 100 × 1.073860 = 107.39 EUR
-                                </small>
-                            </p>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>
