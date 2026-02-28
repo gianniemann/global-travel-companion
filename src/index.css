@@ -10,3 +10,85 @@ body {
 .min-vh-100 {
   min-height: 100vh;
 }
+
+/* ── Bootstrap Primary Farbe überschreiben: Blau → Rot ── */
+:root {
+  --bs-primary:            #c0392b;
+  --bs-primary-rgb:        192, 57, 43;
+  --bs-link-color:         #c0392b;
+  --bs-link-hover-color:   #96281b;
+  --bs-font-sans-serif:    'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ── Globale Basis ── */
+body {
+  margin: 0;
+  font-family: var(--bs-font-sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8f5f5;
+}
+
+/* ── Buttons ── */
+.btn-primary {
+  background-color: #c0392b !important;
+  border-color:     #c0392b !important;
+  color: #fff !important;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #96281b !important;
+  border-color:     #96281b !important;
+}
+.btn-outline-primary {
+  color:        #c0392b !important;
+  border-color: #c0392b !important;
+}
+.btn-outline-primary:hover {
+  background-color: #c0392b !important;
+  color: #fff !important;
+}
+
+/* ── Navbar ── */
+.navbar-dark.bg-primary,
+.bg-primary {
+  background-color: #c0392b !important;
+}
+
+/* ── Badges ── */
+.badge.bg-primary {
+  background-color: #c0392b !important;
+}
+
+/* ── Table Header ── */
+.table-dark {
+  --bs-table-bg: #2c2c2c;
+}
+
+/* ── Cards ── */
+.card {
+  border-radius: 10px;
+  border: 1px solid #e8dede;
+}
+.card.shadow {
+  box-shadow: 0 4px 16px rgba(192, 57, 43, 0.10) !important;
+}
+
+/* ── Form Controls ── */
+.form-control:focus,
+.form-select:focus {
+  border-color: #c0392b;
+  box-shadow: 0 0 0 0.2rem rgba(192, 57, 43, 0.20);
+}
+
+/* ── Alerts ── */
+.alert-info {
+  background-color: #fdf0ef;
+  border-color:     #f5c6c2;
+  color:            #7b1f17;
+}
+
+/* ── Utility ── */
+.min-vh-100 {
+  min-height: 100vh;
+}

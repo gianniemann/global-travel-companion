@@ -119,10 +119,6 @@ function Calculator() {
                                 </div>
                             )}
 
-                            <div className="text-center mb-4">
-                                <span className="badge bg-primary">⇓</span>
-                            </div>
-
                             <div className="row mb-4">
                                 <div className="col-md-7">
                                     <label htmlFor="targetAmount" className="form-label">Ergebnis</label>
